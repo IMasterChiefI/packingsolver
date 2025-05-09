@@ -63,8 +63,8 @@ async def solve_boxstacks(data: SolveRequest):
 
     # Schreibe items.csv
     with open(items_file, mode="w", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow([
+        writer = csv.writer(f)
+        writer.writerow([
         "id", "width", "length", "height", "quantity", "weight",
         "max_stack_above_weight", "max_items_in_stack", "nesting_height",
         "X", "Y", "Z"
