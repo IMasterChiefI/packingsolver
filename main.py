@@ -110,12 +110,14 @@ async def solve_boxstacks(data: SolveRequest):
     try:
         result = subprocess.run([
             "./install/bin/packingsolver_boxstacks",
-            "--verbosity-level", "0",
+            "--verbosity-level", "1",
             "--items", items_file,
             "--bins", bins_file,
             "--parameters", params_file,
             "--output", output_file,
-            "--certificate", os.path.join(temp_dir, "solution.csv")
+            "--bin-infinite-copies",
+            "--objective", data.parameters.objective,
+            "--time-limit", str(data.parameters.time_limit)
         ], capture_output=True, text=True, timeout=60)
 
         if result.returncode != 0:
