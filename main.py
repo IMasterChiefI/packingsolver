@@ -93,7 +93,7 @@ async def solve_boxstacks(data: SolveRequest):
                 bin["length"],
                 bin["height"],
                 bin["max_weight"],
-                0, 0, 0
+                1, 1, 1
             ])
 
     # Schreibe parameters.csv mit optimalen Defaults
