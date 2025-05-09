@@ -10,7 +10,32 @@ import tempfile
 
 app = FastAPI()
 
+# Vordefinierte Ladehilfsmittel (Paletten)
+PREDEFINED_BINS = [
+    {
+        "id": "euro",
+        "width": 120,
+        "length": 80,
+        "height": 130,
+        "max_weight": 1000
+    },
+    {
+        "id": "chep",
+        "width": 100,
+        "length": 120,
+        "height": 130,
+        "max_weight": 1000
+    },
+    {
+        "id": "industrie",
+        "width": 120,
+        "length": 100,
+        "height": 130,
+        "max_weight": 1500
+    }
+]
 
+# Eingabe-Schema für Items
 class Item(BaseModel):
     id: Optional[str] = None
     width: float
@@ -19,26 +44,14 @@ class Item(BaseModel):
     quantity: int = 1
     weight: Optional[float] = 0.0
 
-
-class Bin(BaseModel):
-    id: Optional[str] = None
-    width: float
-    length: float
-    height: float
-    max_weight: Optional[float] = 1000.0
-
-
 class Parameters(BaseModel):
     bin_infinite_copies: bool = True
     objective: str = "bin-packing"
     time_limit: int = 10
 
-
 class SolveRequest(BaseModel):
     items: List[Item]
-    bins: List[Bin]
     parameters: Optional[Parameters] = Parameters()
-
 
 @app.post("/solve-boxstacks")
 async def solve_boxstacks(data: SolveRequest):
@@ -48,10 +61,14 @@ async def solve_boxstacks(data: SolveRequest):
     params_file = os.path.join(temp_dir, "parameters.csv")
     output_file = os.path.join(temp_dir, "output.json")
 
-    # Write items.csv
+    # Schreibe items.csv
     with open(items_file, mode="w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["id", "width", "length", "height", "quantity", "weight"])
+        writer.writerow([
+            "id", "width", "length", "height", "quantity", "weight",
+            "max_stack_above_weight", "max_items_in_stack", "nesting_height",
+            "X", "Y", "Z"
+        ])
         for idx, item in enumerate(data.items):
             writer.writerow([
                 item.id or f"item_{idx}",
@@ -59,32 +76,35 @@ async def solve_boxstacks(data: SolveRequest):
                 item.length,
                 item.height,
                 item.quantity,
-                item.weight or 0
+                item.weight or 0,
+                "", "", "",  # spätere Stapelregeln
+                "", "", ""
             ])
 
-    # Write bins.csv
+    # Schreibe bins.csv aus PREDEFINED_BINS
     with open(bins_file, mode="w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["id", "width", "length", "height", "max_weight"])
-        for idx, bin in enumerate(data.bins):
+        for bin in PREDEFINED_BINS:
             writer.writerow([
-                bin.id or f"bin_{idx}",
-                bin.width,
-                bin.length,
-                bin.height,
-                bin.max_weight or 1000.0
+                bin["id"],
+                bin["width"],
+                bin["length"],
+                bin["height"],
+                bin["max_weight"]
             ])
 
-    # Write parameters.csv
+    # Schreibe parameters.csv mit optimalen Defaults
     with open(params_file, mode="w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["key", "value"])
         writer.writerow(["objective", data.parameters.objective])
+        writer.writerow(["bin_infinite_copies", str(data.parameters.bin_infinite_copies).lower()])
         writer.writerow(["time_limit", data.parameters.time_limit])
-        if data.parameters.bin_infinite_copies:
-            writer.writerow(["bin_infinite_copies", "true"])
+        writer.writerow(["unloading_constraint", "IncreasingX"])
+        writer.writerow(["verbosity_level", 0])
 
-    # Call the binary
+    # Führe den Solver aus
     try:
         result = subprocess.run([
             "./install/bin/packingsolver_boxstacks",
@@ -93,7 +113,7 @@ async def solve_boxstacks(data: SolveRequest):
             "--bins", bins_file,
             "--parameters", params_file,
             "--output", output_file,
-            "--certificate", os.path.join(temp_dir, "solution.csv"),
+            "--certificate", os.path.join(temp_dir, "solution.csv")
         ], capture_output=True, text=True, timeout=60)
 
         if result.returncode != 0:
