@@ -1,8 +1,9 @@
 FROM ubuntu:22.04
 
-# Install system dependencies (except cmake)
+# System dependencies inkl. LAPACK + BLAS
 RUN apt-get update && apt-get install -y \
-  python3 python3-pip curl unzip g++ git make
+  python3 python3-pip curl unzip g++ git make \
+  liblapack-dev libblas-dev
 
 # Manually install CMake 3.28.3
 RUN curl -L -o cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.tar.gz && \
