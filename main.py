@@ -85,14 +85,15 @@ async def solve_boxstacks(data: SolveRequest):
     # Schreibe bins.csv aus PREDEFINED_BINS
     with open(bins_file, mode="w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["id", "width", "length", "height", "max_weight"])
+        writer.writerow(["id", "width", "length", "height", "max_weight", "X", "Y", "Z"])
         for bin in PREDEFINED_BINS:
             writer.writerow([
                 bin["id"],
                 bin["width"],
                 bin["length"],
                 bin["height"],
-                bin["max_weight"]
+                bin["max_weight"],
+                0, 0, 0
             ])
 
     # Schreibe parameters.csv mit optimalen Defaults
