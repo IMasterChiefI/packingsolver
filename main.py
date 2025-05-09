@@ -86,22 +86,38 @@ async def solve_boxstacks(data: SolveRequest):
     params_file = os.path.join(temp_dir, "parameters.csv")
     output_file = os.path.join(temp_dir, "output.json")
 
-    with open(items_file, "w", newline="") as f:
+    # Schreibe items.csv
+    with open(items_file, mode="w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["ID","X","Y","Z","COPIES","PROFIT","GROUP_ID","ROTATIONS","WEIGHT","STACKABILITY_ID","NESTING_HEIGHT","MAXIMUM_STACKABILITY","MAXIMUM_WEIGHT_ABOVE"])
+        writer.writerow([
+            "ID", "X", "Y", "Z", "COPIES", "PROFIT", "GROUP_ID", "ROTATIONS",
+            "WEIGHT", "STACKABILITY_ID", "NESTING_HEIGHT",
+            "MAXIMUM_STACKABILITY", "MAXIMUM_WEIGHT_ABOVE"
+        ])
         for idx, item in enumerate(data.items):
             writer.writerow([
                 item.id or f"item_{idx}",
-                item.x, item.y, item.z,
-                item.quantity, 0, 0, 63,
-                item.weight or 0, 0, 0, 0, 99999
+                float(item.x),         # X
+                float(item.y),         # Y
+                float(item.z),         # Z
+                int(item.quantity),    # COPIES
+                0,                     # PROFIT
+                0,                     # GROUP_ID
+                63,                    # ROTATIONS
+                float(item.weight or 0),
+                0,                     # STACKABILITY_ID
+                0,                     # NESTING_HEIGHT
+                0,                     # MAXIMUM_STACKABILITY
+                99999                  # MAXIMUM_WEIGHT_ABOVE
             ])
 
     with open(bins_file, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["ID","X","Y","Z","COST","COPIES","COPIES_MIN","MAXIMUM_WEIGHT","MAXIMUM_STACK_DENSITY","IS_SEMI_TRAILER_TRUCK","TRACTOR_WEIGHT","FRONT_AXLE_MIDDLE_AXLE_DISTANCE","FRONT_AXLE_TRACTOR_GRAVITY_CENTER_DISTANCE","FRONT_AXLE_HARNESS_DISTANCE","EMPTY_TRAILER_WEIGHT","HARNESS_REAR_AXLE_DISTANCE","TRAILER_GRAVITY_CENTER_REAR_AXLE_DISTANCE","TRAILER_START_HARNESS_DISTANCE","REAR_AXLE_MAXIMUM_WEIGHT","MIDDLE_AXLE_MAXIMUM_WEIGHT"])
+        fieldnames = ["ID","X","Y","Z","COST","COPIES","COPIES_MIN","MAXIMUM_WEIGHT","MAXIMUM_STACK_DENSITY","IS_SEMI_TRAILER_TRUCK","TRACTOR_WEIGHT","FRONT_AXLE_MIDDLE_AXLE_DISTANCE","FRONT_AXLE_TRACTOR_GRAVITY_CENTER_DISTANCE","FRONT_AXLE_HARNESS_DISTANCE","EMPTY_TRAILER_WEIGHT","HARNESS_REAR_AXLE_DISTANCE","TRAILER_GRAVITY_CENTER_REAR_AXLE_DISTANCE","TRAILER_START_HARNESS_DISTANCE","REAR_AXLE_MAXIMUM_WEIGHT","MIDDLE_AXLE_MAXIMUM_WEIGHT"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
         for bin in PREDEFINED_BINS:
-            writer.writerow([bin[k] for k in writer.fieldnames])
+            writer.writerow(bin)
+
 
     with open(params_file, "w", newline="") as f:
         writer = csv.writer(f)
