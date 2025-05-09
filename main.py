@@ -62,7 +62,7 @@ async def solve_boxstacks(data: SolveRequest):
     output_file = os.path.join(temp_dir, "output.json")
 
     # Schreibe items.csv
-with open(items_file, mode="w", newline="") as f:
+    with open(items_file, mode="w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow([
         "id", "width", "length", "height", "quantity", "weight",
