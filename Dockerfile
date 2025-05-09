@@ -31,3 +31,7 @@ EXPOSE 8000
 
 # Start the FastAPI app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Lade die offiziellen Beispiel-Testdaten für boxstacks
+RUN python3 scripts/download_data.py --data roadef2022_2024-04-25_bpp
+
