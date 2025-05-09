@@ -62,27 +62,26 @@ async def solve_boxstacks(data: SolveRequest):
     output_file = os.path.join(temp_dir, "output.json")
 
     # Schreibe items.csv
-    with open(items_file, mode="w", newline="") as f:
-        writer = csv.writer(f)
+with open(items_file, mode="w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow([
+        "id", "width", "length", "height", "quantity", "weight",
+        "max_stack_above_weight", "max_items_in_stack", "nesting_height",
+        "X", "Y", "Z"
+    ])
+    for idx, item in enumerate(data.items):
         writer.writerow([
-            "id", "width", "length", "height", "quantity", "weight",
-            "max_stack_above_weight", "max_items_in_stack", "nesting_height",
-            "X", "Y", "Z"
+            item.id or f"item_{idx}",
+            float(item.width),
+            float(item.length),
+            float(item.height),
+            int(item.quantity),
+            float(item.weight or 0),
+            99999,
+            0,
+            0,
+            "", "", ""
         ])
-        for idx, item in enumerate(data.items):
-       writer.writerow([
-    item.id or f"item_{idx}",
-    float(item.width),
-    float(item.length),
-    float(item.height),
-    int(item.quantity),
-    float(item.weight or 0),
-    99999,  # max_stack_above_weight
-    0,      # max_items_in_stack
-    0,      # nesting_height
-    "", "", ""  # X, Y, Z
-])
-
 
     # Schreibe bins.csv aus PREDEFINED_BINS
     with open(bins_file, mode="w", newline="") as f:
