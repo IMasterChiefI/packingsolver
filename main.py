@@ -31,7 +31,7 @@ PREDEFINED_BINS = [
         "width": 120,
         "length": 100,
         "height": 130,
-        "max_weight": 1500
+        "max_weight": 1450
     }
 ]
 
