@@ -12,8 +12,8 @@ RUN curl -L -o cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v
     ln -s /opt/cmake/bin/* /usr/local/bin/ && \
     rm cmake.tar.gz
 
-# Install Python packages
-RUN pip3 install fastapi uvicorn
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
 # Set working directory
 WORKDIR /app
