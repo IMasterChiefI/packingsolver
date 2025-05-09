@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List, Optional
 import csv
-import uuid
 import os
 import subprocess
 import json
@@ -65,23 +64,23 @@ async def solve_boxstacks(data: SolveRequest):
     with open(items_file, mode="w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([
-        "id", "width", "length", "height", "quantity", "weight",
-        "max_stack_above_weight", "max_items_in_stack", "nesting_height",
-        "X", "Y", "Z"
-    ])
-    for idx, item in enumerate(data.items):
-        writer.writerow([
-            item.id or f"item_{idx}",
-            float(item.width),
-            float(item.length),
-            float(item.height),
-            int(item.quantity),
-            float(item.weight or 0),
-            99999,
-            0,
-            0,
-            "", "", ""
+            "id", "width", "length", "height", "quantity", "weight",
+            "max_stack_above_weight", "max_items_in_stack", "nesting_height",
+            "X", "Y", "Z"
         ])
+        for idx, item in enumerate(data.items):
+            writer.writerow([
+                item.id or f"item_{idx}",
+                float(item.width),
+                float(item.length),
+                float(item.height),
+                int(item.quantity),
+                float(item.weight or 0),
+                99999,  # sehr hoch → keine Einschränkung nach oben
+                0,      # keine Begrenzung auf Stack-Anzahl
+                0,      # keine Nesting-Höhe
+                "", "", ""
+            ])
 
     # Schreibe bins.csv aus PREDEFINED_BINS
     with open(bins_file, mode="w", newline="") as f:
