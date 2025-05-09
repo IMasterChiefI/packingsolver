@@ -70,17 +70,17 @@ async def solve_boxstacks(data: SolveRequest):
             "X", "Y", "Z"
         ])
         for idx, item in enumerate(data.items):
-            writer.writerow([
+       writer.writerow([
     item.id or f"item_{idx}",
-    item.width,
-    item.length,
-    item.height,
-    item.quantity,
-    item.weight or 0,
-    0,  # max_stack_above_weight
-    0,  # max_items_in_stack
-    0,  # nesting_height
-    "", "", ""  # X, Y, Z können leer bleiben
+    float(item.width),
+    float(item.length),
+    float(item.height),
+    int(item.quantity),
+    float(item.weight or 0),
+    99999,  # max_stack_above_weight
+    0,      # max_items_in_stack
+    0,      # nesting_height
+    "", "", ""  # X, Y, Z
 ])
 
 
