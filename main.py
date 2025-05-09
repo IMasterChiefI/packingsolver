@@ -71,15 +71,18 @@ async def solve_boxstacks(data: SolveRequest):
         ])
         for idx, item in enumerate(data.items):
             writer.writerow([
-                item.id or f"item_{idx}",
-                item.width,
-                item.length,
-                item.height,
-                item.quantity,
-                item.weight or 0,
-                "", "", "",  # spätere Stapelregeln
-                "", "", ""
-            ])
+    item.id or f"item_{idx}",
+    item.width,
+    item.length,
+    item.height,
+    item.quantity,
+    item.weight or 0,
+    0,  # max_stack_above_weight
+    0,  # max_items_in_stack
+    0,  # nesting_height
+    "", "", ""  # X, Y, Z können leer bleiben
+])
+
 
     # Schreibe bins.csv aus PREDEFINED_BINS
     with open(bins_file, mode="w", newline="") as f:
